@@ -24,13 +24,10 @@ namespace XunitTest
             _driver = Config.driver;
             _baseUrl = Config.BaseUrl;
         }
-
-        [Fact]
-        public void LoginSuccess()
+        public void LogInToPortal()
         {
             _driver.Navigate().GoToUrl(_baseUrl);
             Thread.Sleep(2000);
-
             IWebElement loginButton = _driver.FindElement(By.ClassName("orangehrm-login-button"));
             IWebElement username = _driver.FindElement(By.Name("username"));
             IWebElement password = _driver.FindElement(By.Name("password"));
@@ -38,26 +35,42 @@ namespace XunitTest
             password.SendKeys(_password);
             loginButton.Click();
             Thread.Sleep(2000);
-
-            string currentUrl = _driver.Url;
-            Console.WriteLine("Current URL:----------- " + currentUrl);
-            //_driver.Quit();
-
-            Assert.NotEqual(currentUrl, _baseUrl);
-            Assert.Contains("dashboard", _baseUrl);
-
         }
         [Fact]
         public void LogInRequiredfiledEnabled()
         {
             _driver.Navigate().GoToUrl(_baseUrl);
             Thread.Sleep(2000);
-
             IWebElement loginButton = _driver.FindElement(By.ClassName("orangehrm-login-button"));
             loginButton.Click();
             Thread.Sleep(2000);
             IWebElement errorMsg = _driver.FindElement(By.ClassName("oxd-input-field-error-message"));
             Assert.True(errorMsg.Displayed);
         }
+
+        [Fact]
+        public void LoginSuccess()
+        {
+            LogInToPortal();
+            string currentUrl = _driver.Url;
+            Console.WriteLine("Current URL:----------- " + currentUrl);
+            //_driver.Quit();
+            Assert.NotEqual(currentUrl, _baseUrl);
+            Assert.Contains("dashboard", currentUrl);
+        }
+
+        [Fact]
+        public void IsDashboardLoadSucessfull()
+        {
+            LogInToPortal();
+            IWebElement DashBoardGrid = _driver.FindElement(By.ClassName("orangehrm-dashboard-grid"));
+            IList<IWebElement> childDivs = DashBoardGrid.FindElements(By.CssSelector(".oxd-grid-item.oxd-grid-item--gutters.orangehrm-dashboard-widget"));
+            
+            Assert.Equal(7, childDivs.Count);
+
+        }
+
+
+
     }
 }
